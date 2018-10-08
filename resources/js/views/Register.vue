@@ -36,8 +36,9 @@
                             name="password_confirmation"
                             placeholder="Re-enter password" />
                     </div>
-                    <div class="alert alert-danger" v-show="errorMessage">
-                        {{ errorMessage }}
+                    <div :class="[ 'alert', response.success ? 'alert-success' : 'alert-danger']"
+                        v-show="showStatus">
+                        {{ response.message }}
                     </div>
                     <input class="btn btn-primary" type="submit" value="Register">
                 </form>
@@ -57,17 +58,25 @@ export default {
                 password: '',
                 password_confirmation: ''
             },
-            errorMessage: ''
+            showStatus: false,
+            response: {
+                success: true,
+                message: ''
+            }
         }
     },
     methods: {
         onSubmit(e) {
             axios.post('/api/register' , this.user)
                 .then((response) => {
-                    console.log(response.data)
+                    this.showStatus = true
+                    this.response.success = response.data.success,
+                    this.response.message = 'User successfully registered.'
                 })
                 .catch((error) => {
-                    this.errorMessage = error.response.data.message
+                    this.showStatus = true
+                    this.response.success = error.response.data.success
+                    this.response.message = error.response.data.message
                 })
         }
     }
